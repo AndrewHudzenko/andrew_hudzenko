@@ -14,25 +14,25 @@ import java.util.Collection;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class JoinOperationTest {
-    private JoinOperation innerJoin = new InnerJoinOperation();
-    private JoinOperation leftJoin = new LeftJoinOperation();
-    private JoinOperation rightJoin = new RightJoinOperation();
-    private List<DataRow> leftCollection;
-    private List<DataRow> rightCollection;
+public class JoinOperationTest<R, K extends Comparable<K>, V> {
+    private JoinOperation<DataRow<K, V>, DataRow<K, V>, R> innerJoin = new InnerJoinOperation<>();
+    private JoinOperation<DataRow<K, V>, DataRow<K, V>, R> leftJoin = new LeftJoinOperation<>();
+    private JoinOperation<DataRow<K, V>, DataRow<K, V>, R> rightJoin = new RightJoinOperation<>();
+    private List<DataRow<K, V>> leftCollection;
+    private List<DataRow<K, V>> rightCollection;
 
-    private DataRow leftDataRow0 = new DataRow(0, "Ukraine");
-    private DataRow leftDataRow1 = new DataRow(1, "Germany");
-    private DataRow leftDataRow2 = new DataRow(2, "France");
+    private final DataRow<K, V> leftDataRow0 = new DataRow(0, "Ukraine");
+    private final DataRow<K, V> leftDataRow1 = new DataRow(1, "Germany");
+    private final DataRow<K, V> leftDataRow2 = new DataRow(2, "France");
 
-    private DataRow rightDataRow0 = new DataRow(0, "Kyiv");
-    private DataRow rightDataRow1 = new DataRow(1, "Berlin");
-    private DataRow rightDataRow2 = new DataRow(3, "Budapest");
+    private final DataRow<K, V> rightDataRow0 = new DataRow(0, "Kyiv");
+    private final DataRow<K, V> rightDataRow1 = new DataRow(1, "Berlin");
+    private final DataRow<K, V> rightDataRow2 = new DataRow(3, "Budapest");
 
     @BeforeEach
     void setUp() {
-        leftCollection = new ArrayList();
-        rightCollection = new ArrayList();
+        leftCollection = new ArrayList<>();
+        rightCollection = new ArrayList<>();
 
         leftCollection.add(leftDataRow0);
         leftCollection.add(leftDataRow1);
@@ -66,10 +66,10 @@ public class JoinOperationTest {
 
     @Test
     void innerJoinOperation_Ok() {
-        Collection actual = innerJoin.join(leftCollection, rightCollection);
-        Collection expected = new ArrayList<>();
-        expected.add(new JoinedDataRow(0, "Ukraine", "Kyiv"));
-        expected.add(new JoinedDataRow(1, "Germany", "Berlin"));
+        Collection<R> actual = innerJoin.join(leftCollection, rightCollection);
+        Collection<R> expected = new ArrayList<>();
+        expected.add((R) new JoinedDataRow(0, "Ukraine", "Kyiv"));
+        expected.add((R) new JoinedDataRow(1, "Germany", "Berlin"));
         assertEquals(expected, actual);
         /**
          * we can simply check with a string(in all tests), but need to call toString() method for actual variable
@@ -81,21 +81,21 @@ public class JoinOperationTest {
 
     @Test
     void leftJoinOperation_Ok() {
-        Collection actual = leftJoin.join(leftCollection, rightCollection);
-        Collection expected = new ArrayList<>();
-        expected.add(new JoinedDataRow(0, "Ukraine", "Kyiv"));
-        expected.add(new JoinedDataRow(1, "Germany", "Berlin"));
-        expected.add(new JoinedDataRow(2, "France", null));
+        Collection<R> actual = leftJoin.join(leftCollection, rightCollection);
+        Collection<R> expected = new ArrayList<>();
+        expected.add((R) new JoinedDataRow(0, "Ukraine", "Kyiv"));
+        expected.add((R) new JoinedDataRow(1, "Germany", "Berlin"));
+        expected.add((R) new JoinedDataRow(2, "France", null));
         assertEquals(expected, actual);
     }
 
     @Test
     void rightJoinOperation_Ok() {
-        Collection actual = rightJoin.join(leftCollection, rightCollection);
-        Collection expected = new ArrayList<>();
-        expected.add(new JoinedDataRow(0, "Ukraine", "Kyiv"));
-        expected.add(new JoinedDataRow(1, "Germany", "Berlin"));
-        expected.add(new JoinedDataRow(3, null, "Budapest"));
+        Collection<R> actual = rightJoin.join(leftCollection, rightCollection);
+        Collection<R> expected = new ArrayList<>();
+        expected.add((R) new JoinedDataRow(0, "Ukraine", "Kyiv"));
+        expected.add((R) new JoinedDataRow(1, "Germany", "Berlin"));
+        expected.add((R) new JoinedDataRow(3, null, "Budapest"));
         assertEquals(expected, actual);
     }
 }

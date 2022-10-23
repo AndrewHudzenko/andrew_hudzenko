@@ -7,26 +7,26 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class LeftJoinOperation implements JoinOperation {
+public class LeftJoinOperation<D1, D2, R, K extends Comparable<K>, V, V1, V2> implements JoinOperation<D1, D2, R> {
     @Override
-    public Collection join(Collection leftCollection, Collection rightCollection) {
-        List<DataRow> leftData = (List<DataRow>) leftCollection;
-        List<DataRow> rightData = (List<DataRow>) rightCollection;
+    public Collection<R> join(Collection<D1> leftCollection, Collection<D2> rightCollection) {
+        List<DataRow<K, V>> leftData = (List<DataRow<K, V>>) leftCollection;
+        List<DataRow<K, V>> rightData = (List<DataRow<K, V>>) rightCollection;
 
-        List<JoinedDataRow> result = new ArrayList<>();
+        List<R> result = new ArrayList<>();
 
-        for (int i = 0; i < leftData.size(); i++) {
-            JoinedDataRow joinedData = new JoinedDataRow();
+        for (DataRow<K, V> value : leftData) {
+            JoinedDataRow<K, V1, V2> joinedData = new JoinedDataRow<>();
 
-            joinedData.setId(leftData.get(i).getId());
-            joinedData.setLeftDataValue(leftData.get(i).getValue());
+            joinedData.setId(value.getId());
+            joinedData.setLeftDataValue((V1) value.getValue());
 
-            for (int j = 0; j < rightData.size(); j++) {
-                if (leftData.get(i).getId().equals(rightData.get(j).getId())) {
-                    joinedData.setRightDataValue(rightData.get(j).getValue());
+            for (DataRow<K, V> secondValue : rightData) {
+                if (value.getId().equals(secondValue.getId())) {
+                    joinedData.setRightDataValue((V2) secondValue.getValue());
                 }
             }
-            result.add(joinedData);
+            result.add((R) joinedData);
         }
         return result;
     }
